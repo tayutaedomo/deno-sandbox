@@ -21,3 +21,12 @@ $ deno run --allow-env --allow-net main.ts
 $ open "http://localhost:8080"
 ```
 
+
+## Docker
+```
+$ cd deno-sandbox
+$ docker build -t deno-sandbox .
+$ docker run --rm -it -e PORT=8080 -p 8080:8080 deno-sandbox
+$ open "http://0.0.0.0:8080"
+```
+
