@@ -22,6 +22,7 @@
  * Servest
  */
 import {createApp} from "https://servestjs.org/@v1.1.2/mod.ts";
+import vs from "https://deno.land/x/value_schema/mod.ts";
 
 const app = createApp();
 
@@ -36,6 +37,27 @@ app.handle("/", async (req) => {
 });
 
 
+
+const schemaObject = {
+    q: vs.string({
+        ifEmptyString: "",
+        ifUndefined: "",
+    }),
+    limit: vs.number({
+        integer: vs.NUMBER.INTEGER.FLOOR,
+        minValue: 1,
+        maxValue: 20,
+        ifUndefined: 10,
+    }),
+    offset: vs.number({
+        integer: vs.NUMBER.INTEGER.YES,
+        minValue: {
+            value: 0,
+            adjusts: true,
+        },
+        ifUndefined: 0,
+    }),
+};
 
 interface User {
     id: number
@@ -56,12 +78,29 @@ const users: User[] = [
 ];
 
 app.get("/users", async (req) => {
+    //await req.respond({
+    //    status: 200,
+    //    headers: new Headers({
+    //        "content-type": "application/json",
+    //    }),
+    //    body: JSON.stringify(users),
+    //});
+
+    const query: Record<string, string> = {};
+    for (const [k, v] of req.query.entries()) {
+        query[k] = v;
+    }
+    const normalizedQuery = vs.applySchemaObject(schemaObject, query);
+    const filteredUsers = users
+        .filter(user => user.name.indexOf(normalizedQuery.q) != -1)
+        .slice(normalizedQuery.offset, normalizedQuery.offset + normalizedQuery.limit);
+
     await req.respond({
         status: 200,
         headers: new Headers({
             "content-type": "application/json",
         }),
-        body: JSON.stringify(users),
+        body: JSON.stringify(filteredUsers),
     });
 });
 
