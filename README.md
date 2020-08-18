@@ -21,3 +21,20 @@ $ deno run --allow-env --allow-net main.ts
 $ open "http://localhost:8080"
 ```
 
+
+## Docker
+```
+$ cd deno-sandbox
+$ docker build -t deno-sandbox .
+$ docker run --rm -it -e PORT=8080 -p 8080:8080 deno-sandbox
+$ open "http://0.0.0.0:8080"
+```
+
+
+## Cloud Run
+```
+$ cd deno-sandbox
+$ gcloud builds submit --tag gcr.io/[PROJECT-ID]/deno-sandbox
+$ gcloud run deploy --image gcr.io/[PROJECT-ID]/deno-sandbox --platform managed
+```
+
