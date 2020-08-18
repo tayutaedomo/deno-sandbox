@@ -24,7 +24,11 @@
 import {createApp} from "https://servestjs.org/@v1.1.2/mod.ts";
 import vs from "https://deno.land/x/value_schema/mod.ts";
 
+import jsx from './jsx.tsx'
+
+
 const app = createApp();
+
 
 app.handle("/", async (req) => {
   await req.respond({
@@ -118,6 +122,18 @@ app.get(new RegExp("^/users/(\\d+)"), async (req) => {
             "content-type": "application/json",
         }),
         body: JSON.stringify(filtered[0]),
+    });
+});
+
+
+app.handle("/jsx", async (req) => {
+    const body = jsx.htmlHelloWorld()
+    await req.respond({
+        status: 200,
+        headers: new Headers({
+          "content-type": "text/html; charset=UTF-8",
+        }),
+        body: body,
     });
 });
 
